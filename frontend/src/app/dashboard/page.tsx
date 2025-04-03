@@ -7,7 +7,7 @@ import style from "./dashboard.module.css";
 interface Guild {
   id: string;
   name: string;
-  owner: boolean;
+  permissions_new: string;
 }
 
 interface FormData {
@@ -30,8 +30,8 @@ export default function Dashboard() {
     axios
       .get("/apibot/auth/guilds", { withCredentials: true })
       .then((guildRes) => {
-        const ownedGuilds = guildRes.data.filter((guild: Guild) => guild.owner);
-        setGuilds(ownedGuilds);
+        const canBotGuilds = guildRes.data.filter((guild: Guild) => (parseInt(guild.permissions_new) & 0x20) !== 0);
+        setGuilds(canBotGuilds);
       })
       .catch((err) => {
         console.error(err);

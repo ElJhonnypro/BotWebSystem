@@ -5,7 +5,8 @@ app.use(express.json());
 const cors = require("cors");
 const axios = require("axios");
 require('dotenv').config();
-
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 300 });
 
 const port = 4765;
 
@@ -100,8 +101,8 @@ const discordjoin = async (req, res) => {
         const tokenRes = await axios.post(
             "https://discord.com/api/oauth2/token",
             new URLSearchParams({
-                client_id: process.env.DISCORD_CLIENT_ID || "1354979490098446507",  // Default to fallback value if not found
-                client_secret: process.env.DISCORD_CLIENT_SECRET || "U5dNZfyQ1iwlsiSSunOG_3zTZ-yNn7J4",  // Same for client secret
+                client_id: process.env.DISCORD_CLIENT_ID || "your id",  // Default to fallback value if not found
+                client_secret: process.env.DISCORD_CLIENT_SECRET || "ur ass secret",  // Same for client secret
                 grant_type: 'authorization_code',
                 code,
                 redirect_uri: 'http://localhost:4765/auth/verify',
@@ -161,6 +162,7 @@ const discordservers = async (req, res) => {
                 },
             });
             res.status(200).json(guildsres.data); // Respond with the server data
+            cache.set(token, guildsres.data);
         } catch (err) {
             console.error("Error fetching servers:", err.response?.data || err.message);
             return res.status(500).send("Error fetching servers");
@@ -188,6 +190,49 @@ app.use(
     credentials: true, // required for cookies to work
   })
 );
+
+app.use("/settings/", async (req, res, next) => {
+    const { guildid } = req.body;
+    if (!guildid) {
+        return res.status(400).json({ error: 'guildid is required' });
+    }
+
+    // Token verification
+    const token = req.headers.cookie?.split("; ")
+              .find(cookie => cookie.startsWith("discord_token="))
+              ?.split("=")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "No token provided" });
+    }
+
+    try {
+        let userGuilds = cache.get(token);
+
+        if (!userGuilds) {
+            const userGuildsRes = await axios.get("https://discord.com/api/users/@me/guilds", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            userGuilds = userGuildsRes.data;
+            cache.set(token, userGuilds); // Guarda en caché
+        }
+
+        const targetGuild = userGuilds.find(
+            (guild) => guild.id === guildid && (parseInt(guild.permissions_new) & 0x20) !== 0
+        );
+
+        if (!targetGuild) {
+            console.log("perms not available");
+            return res.status(403).json({ error: "Forbidden: You do not have permission to modify this server" });
+        }
+
+        next();
+    } catch (err) {
+        console.error("Error fetching user guilds:", err.response?.data || err.message);
+        return res.status(500).json({ error: "Error fetching user guilds" });
+    }
+});
 
 
 
