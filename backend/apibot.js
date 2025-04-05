@@ -238,7 +238,7 @@ app.use("/settings/", async (req, res, next) => {
 
 app.put("/settings/applyPrefix", applyPrefix);
 app.put("/settings/applyMessage", applyMessage);
-app.post("/settings/getData", getData);
+app.post("/bot/getData", getData);
 app.all("/auth/verify", discordjoin);
 app.get("/auth/guilds", discordservers);
 app.get("/auth/logout", discordlogout);

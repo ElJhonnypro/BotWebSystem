@@ -1,15 +1,26 @@
 .serversList {
-    background: linear-gradient(125deg, rgb(45, 108, 208), rgb(57, 108, 237));
+    background: linear-gradient(125deg, rgba(223, 235, 255, 0.648), rgba(130, 135, 148, 0.762));
     display: flex;
     flex-direction: column;
     gap: 1vh;
     padding: 2vh;
     border-radius: 10px;
-    max-width:fit-content;
-    min-width: 50vh;
+    box-shadow: 0 0 30px rgb(255, 255, 255), 5px 5px 40px rgb(7, 15, 28);
+
+}
+
+.serversObject {
+    background: linear-gradient(125deg, rgb(45, 108, 208), rgb(57, 108, 237));
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1vh;
+    padding: 2vh;
+    border-radius: 10px;
     box-shadow: 0 0 30px rgb(255, 255, 255), 5px 5px 40px rgb(7, 15, 28);
     
 }
+
 
 .serversContainer {
     display: flex;
@@ -18,6 +29,14 @@
     gap: 1em;
     padding: 1em;
     border-radius: 10px;
-    background: linear-gradient(-45deg, rgb(147, 45, 255), rgb(98, 29, 216), rgb(147, 45, 255));
     width: 100%;
+}
+
+.Dashboard_Main {
+    text-align: center;
+
+}
+
+.closed {
+    display: none;
 }

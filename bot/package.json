@@ -4,6 +4,7 @@
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
     "fs": "^0.0.1-security",
+    "node-cache": "^5.1.2",
     "path": "^0.12.7"
   }
 }
